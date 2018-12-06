@@ -1,0 +1,3 @@
+[submodule "worktime-rails"]
+	path = worktime-rails
+	url = git@github.com:satooshi/worktime-rails.git
