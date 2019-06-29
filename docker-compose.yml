@@ -1,11 +1,11 @@
-version: "3"
+version: "3.7"
 services:
   web:
-    image: nginx:1.15.7-alpine
+    image: nginx:1.17.0-alpine
     ports:
       - "80:80"
   postgresql:
-    image: postgres:11.1-alpine
+    image: postgres:11.4-alpine
     environment:
       PG_PASSWORD: password
     ports:
