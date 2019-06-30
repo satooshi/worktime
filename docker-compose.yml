@@ -4,7 +4,11 @@ services:
     image: nginx:1.17.0-alpine
     ports:
       - "80:80"
+    depends_on:
+      - ruby
   postgresql:
+    # docker-compose run psql
+    # create role worktime_app WITH LOGIN CREATEDB PASSWORD 'worktime_password';
     image: postgres:11.4-alpine
     environment:
       PG_PASSWORD: password
@@ -12,5 +16,34 @@ services:
       - "5432:5432"
     volumes:
       - db:/var/lib/postgresql
+  ruby:
+    build:
+      context: ./worktime-rails
+      dockerfile: docker/Dockerfile
+    environment:
+      # DATABASE_URL: postgresql://postgres
+      DATABASE_NAME: worktime_dev
+      DATABASE_HOST: postgresql
+      DATABASE_PORT: 5432
+      RAILS_MAX_THREADS: 5
+      DATABASE_USERNAME: worktime_app
+      DATABASE_PASSWORD: worktime_password
+      BUNDLE_APP_CONFIG: /usr/src/app/.bundle
+      BUNDLE_PATH: /usr/src/app/vendor/bundle
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./worktime-rails/app:/usr/src/app/app
+      - ./worktime-rails/bin:/usr/src/app/bin
+      - ./worktime-rails/config:/usr/src/app/config
+      - ./worktime-rails/db:/usr/src/app/db
+      - ./worktime-rails/lib:/usr/src/app/lib
+      - ./worktime-rails/public:/usr/src/app/public
+      - ./worktime-rails/storage:/usr/src/app/storage
+      # - ./worktime-rails/tmp:/usr/src/app/tmp
+      - ./worktime-rails/vendor:/usr/src/app/vendor
+    depends_on:
+      - postgresql
+    command: /bin/sh -c "bundle exec rails server -p 3000 -b 0.0.0.0"
 volumes:
   db:
