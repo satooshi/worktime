@@ -21,6 +21,7 @@ services:
       context: ./worktime-rails
       dockerfile: docker/Dockerfile
     environment:
+      RAILS_ENV: development
       # DATABASE_URL: postgresql://postgres
       DATABASE_NAME: worktime_dev
       DATABASE_HOST: postgresql
@@ -42,6 +43,12 @@ services:
       - ./worktime-rails/storage:/usr/src/app/storage
       # - ./worktime-rails/tmp:/usr/src/app/tmp
       - ./worktime-rails/vendor:/usr/src/app/vendor
+      - ./worktime-rails/.bundle:/usr/src/app/.bundle
+      - ./worktime-rails/.rubocop.yml:/usr/src/app/.rubocop.yml
+      - ./worktime-rails/config.ru:/usr/src/app/config.ru
+      - ./worktime-rails/Gemfile:/usr/src/app/Gemfile
+      - ./worktime-rails/Gemfile.lock:/usr/src/app/Gemfile.lock
+      - ./worktime-rails/Rakefile:/usr/src/app/vendor
     depends_on:
       - postgresql
     command: /bin/sh -c "bundle exec rails server -p 3000 -b 0.0.0.0"
