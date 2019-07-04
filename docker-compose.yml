@@ -7,7 +7,7 @@ services:
     depends_on:
       - ruby
   postgresql:
-    # docker-compose run psql -Upostgres
+    # docker-compose exec postgresql psql -Upostgres
     # create role worktime_app WITH LOGIN CREATEDB PASSWORD 'worktime_password';
     image: postgres:11.4-alpine
     environment:
@@ -15,7 +15,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db:/var/lib/postgresql
+      - db:/var/lib/postgresql/data
   ruby:
     # dc exec ruby bin/rails db:create
     build:
@@ -57,4 +57,3 @@ services:
   # rspec:
 volumes:
   db:
-    # driver: local
