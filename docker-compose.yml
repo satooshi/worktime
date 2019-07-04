@@ -55,7 +55,8 @@ services:
     tty: true
     stdin_open: true
   spring: # container for rake tasks
-    # dc exec ruby bin/rails db:create
+    # dc exec spring bin/rails db:create
+    # dc exec spring bin/rails db:migrate
     <<: *app_base
     command: ["bundle", "exec", "spring", "server"]
     ports: []
@@ -75,7 +76,7 @@ services:
       DATABASE_PASSWORD: worktime_password
       BUNDLE_APP_CONFIG: /usr/src/app/.bundle
       BUNDLE_PATH: /usr/src/app/vendor/bundle
-    command: /bin/sh -c "sleep infinity"
+    command: ["bundle", "exec", "spring", "server"]
     ports: []
 volumes:
   db:
