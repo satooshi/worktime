@@ -16,8 +16,7 @@ services:
       - "5432:5432"
     volumes:
       - db:/var/lib/postgresql/data
-  ruby:
-    # dc exec ruby bin/rails db:create
+  ruby: &app_base
     build:
       context: ./worktime-rails
       dockerfile: docker/Dockerfile
@@ -53,7 +52,30 @@ services:
     depends_on:
       - postgresql
     command: /bin/sh -c "bundle exec rails server -p 3000 -b 0.0.0.0"
-  # spring:
-  # rspec:
+    tty: true
+    stdin_open: true
+  spring: # container for rake tasks
+    # dc exec ruby bin/rails db:create
+    <<: *app_base
+    command: ["bundle", "exec", "spring", "server"]
+    ports: []
+    tty: false
+    stdin_open: false
+  rspec:
+    # dc exec rspec bin/rspec
+    <<: *app_base
+    environment:
+      RAILS_ENV: test
+      # DATABASE_URL: postgresql://postgres
+      DATABASE_NAME: worktime_test
+      DATABASE_HOST: postgresql
+      DATABASE_PORT: 5432
+      RAILS_MAX_THREADS: 5
+      DATABASE_USERNAME: worktime_app
+      DATABASE_PASSWORD: worktime_password
+      BUNDLE_APP_CONFIG: /usr/src/app/.bundle
+      BUNDLE_PATH: /usr/src/app/vendor/bundle
+    command: /bin/sh -c "sleep infinity"
+    ports: []
 volumes:
   db:
