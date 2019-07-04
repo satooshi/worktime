@@ -7,7 +7,7 @@ services:
     depends_on:
       - ruby
   postgresql:
-    # docker-compose exec postgresql psql -Upostgres
+    # dc exec postgresql psql -Upostgres
     # create role worktime_app WITH LOGIN CREATEDB PASSWORD 'worktime_password';
     image: postgres:11.4-alpine
     environment:
