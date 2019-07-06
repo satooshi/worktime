@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-  web:
+  nginx:
     image: nginx:1.17.0-alpine
     ports:
       - "80:80"
@@ -9,6 +9,7 @@ services:
   postgresql:
     # dc exec postgresql psql -Upostgres
     # create role worktime_app WITH LOGIN CREATEDB PASSWORD 'worktime_password';
+    # dc exec postgresql pg_dump -s -x -O -f /usr/src/app/db/structure.sql worktime_dev
     image: postgres:11.4-alpine
     environment:
       PG_PASSWORD: password
@@ -41,7 +42,6 @@ services:
       - ./worktime-rails/lib:/usr/src/app/lib
       - ./worktime-rails/public:/usr/src/app/public
       - ./worktime-rails/storage:/usr/src/app/storage
-      # - ./worktime-rails/tmp:/usr/src/app/tmp
       - ./worktime-rails/vendor:/usr/src/app/vendor
       - ./worktime-rails/.bundle:/usr/src/app/.bundle
       - ./worktime-rails/.rubocop.yml:/usr/src/app/.rubocop.yml
@@ -55,6 +55,7 @@ services:
     tty: true
     stdin_open: true
   spring: # container for rake tasks
+    # dc exec spring bin/rails -T
     # dc exec spring bin/rails db:create
     # dc exec spring bin/rails db:migrate
     <<: *app_base
@@ -64,10 +65,11 @@ services:
     stdin_open: false
   rspec:
     # dc exec rspec bin/rspec
+    # dc exec rspec bundle exec rspec
+    # dc exec rspec bundle exec guard
     <<: *app_base
     environment:
       RAILS_ENV: test
-      # DATABASE_URL: postgresql://postgres
       DATABASE_NAME: worktime_test
       DATABASE_HOST: postgresql
       DATABASE_PORT: 5432
