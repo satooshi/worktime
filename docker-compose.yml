@@ -7,14 +7,15 @@ services:
     depends_on:
       - ruby
   pgdb:
-    # dc exec pgdb psql -Upostgres
-    # dc exec pgdb pg_dump -s -x -O -f /usr/src/app/db/structure.sql worktime_dev
+    # dce pgdb psql -Upostgres
+    # dce pgdb pg_dump -s -x -O -f /usr/src/app/db/structure.sql worktime_dev
     image: postgres:11.4-alpine
     environment:
       PG_PASSWORD: password
     volumes:
       - db:/var/lib/postgresql/data
   pgdb-test:
+    # dce pgdb-test psql -Upostgres
     image: postgres:11.4-alpine
     environment:
       PG_PASSWORD: password
@@ -56,18 +57,19 @@ services:
     tty: true
     stdin_open: true
   spring: # container for rake tasks
-    # dc exec spring bin/rails -T
-    # dc exec spring bin/rails db:create
-    # dc exec spring bin/rails db:migrate
+    # dce spring bin/rails -T
+    # dce spring bin/rails db:create
+    # dce spring bin/rails db:migrate
     <<: *app_base
     command: ["bundle", "exec", "spring", "server"]
     ports: []
     tty: false
     stdin_open: false
   rspec:
-    # dc exec rspec bin/rspec
-    # dc exec rspec bundle exec rspec
-    # dc exec rspec bundle exec guard
+    # dce rspec bin/rails db:setup
+    # dce rspec bin/rspec
+    # dce rspec bundle exec rspec
+    # dce rspec bundle exec guard
     <<: *app_base
     environment:
       RAILS_ENV: test
