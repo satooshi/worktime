@@ -6,10 +6,10 @@ services:
       - "80:80"
     depends_on:
       - ruby
-  postgresql:
-    # dc exec postgresql psql -Upostgres
+  pgdb:
+    # dc exec pgdb psql -Upostgres
     # create role worktime_app WITH LOGIN CREATEDB PASSWORD 'worktime_password';
-    # dc exec postgresql pg_dump -s -x -O -f /usr/src/app/db/structure.sql worktime_dev
+    # dc exec pgdb pg_dump -s -x -O -f /usr/src/app/db/structure.sql worktime_dev
     image: postgres:11.4-alpine
     environment:
       PG_PASSWORD: password
@@ -17,19 +17,25 @@ services:
       - "5432:5432"
     volumes:
       - db:/var/lib/postgresql/data
+  pgdb-test:
+    image: postgres:11.4-alpine
+    environment:
+      PG_PASSWORD: password
+    ports:
+      - "5442:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
   ruby: &app_base
     build:
       context: ./worktime-rails
       dockerfile: docker/Dockerfile
     environment:
       RAILS_ENV: development
-      # DATABASE_URL: postgresql://postgres
       DATABASE_NAME: worktime_dev
-      DATABASE_HOST: postgresql
+      DATABASE_HOST: pgdb
       DATABASE_PORT: 5432
       RAILS_MAX_THREADS: 5
-      DATABASE_USERNAME: worktime_app
-      DATABASE_PASSWORD: worktime_password
+      DATABASE_USERNAME: postgres
       BUNDLE_APP_CONFIG: /usr/src/app/.bundle
       BUNDLE_PATH: /usr/src/app/vendor/bundle
     ports:
@@ -50,7 +56,7 @@ services:
       - ./worktime-rails/Gemfile.lock:/usr/src/app/Gemfile.lock
       - ./worktime-rails/Rakefile:/usr/src/app/Rakefile
     depends_on:
-      - postgresql
+      - pgdb
     command: /bin/sh -c "bundle exec rails server -p 3000 -b 0.0.0.0"
     tty: true
     stdin_open: true
@@ -71,14 +77,17 @@ services:
     environment:
       RAILS_ENV: test
       DATABASE_NAME: worktime_test
-      DATABASE_HOST: postgresql
+      DATABASE_HOST: pgdb-test
       DATABASE_PORT: 5432
       RAILS_MAX_THREADS: 5
-      DATABASE_USERNAME: worktime_app
-      DATABASE_PASSWORD: worktime_password
+      DATABASE_USERNAME: postgres
       BUNDLE_APP_CONFIG: /usr/src/app/.bundle
       BUNDLE_PATH: /usr/src/app/vendor/bundle
     command: ["bundle", "exec", "spring", "server"]
     ports: []
+    depends_on:
+      - pgdb-test
+  fluentd:
+    image: fluent/fluentd:v1.6-1
 volumes:
   db:
