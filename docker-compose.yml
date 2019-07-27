@@ -8,7 +8,6 @@ services:
       - ruby
   pgdb:
     # dc exec pgdb psql -Upostgres
-    # create role worktime_app WITH LOGIN CREATEDB PASSWORD 'worktime_password';
     # dc exec pgdb pg_dump -s -x -O -f /usr/src/app/db/structure.sql worktime_dev
     image: postgres:11.4-alpine
     environment:
