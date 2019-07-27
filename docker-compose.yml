@@ -12,16 +12,12 @@ services:
     image: postgres:11.4-alpine
     environment:
       PG_PASSWORD: password
-    ports:
-      - "5432:5432"
     volumes:
       - db:/var/lib/postgresql/data
   pgdb-test:
     image: postgres:11.4-alpine
     environment:
       PG_PASSWORD: password
-    ports:
-      - "5442:5432"
     tmpfs:
       - /var/lib/postgresql/data
   ruby: &app_base
