@@ -43,13 +43,17 @@ services:
       - ./worktime-rails/db:/usr/src/app/db
       - ./worktime-rails/lib:/usr/src/app/lib
       - ./worktime-rails/public:/usr/src/app/public
+      - ./worktime-rails/sorbet:/usr/src/app/sorbet
+      - ./worktime-rails/spec:/usr/src/app/spec
       - ./worktime-rails/storage:/usr/src/app/storage
       - ./worktime-rails/vendor:/usr/src/app/vendor
       - ./worktime-rails/.bundle:/usr/src/app/.bundle
+      - ./worktime-rails/.rspec:/usr/src/app/.rspec
       - ./worktime-rails/.rubocop.yml:/usr/src/app/.rubocop.yml
       - ./worktime-rails/config.ru:/usr/src/app/config.ru
       - ./worktime-rails/Gemfile:/usr/src/app/Gemfile
       - ./worktime-rails/Gemfile.lock:/usr/src/app/Gemfile.lock
+      - ./worktime-rails/Guardfile:/usr/src/app/Guardfile
       - ./worktime-rails/Rakefile:/usr/src/app/Rakefile
     depends_on:
       - pgdb
